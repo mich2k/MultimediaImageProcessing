@@ -24,16 +24,16 @@ int cmpfunc(const void* a, const void* b)   //cmpfunc overflow-safe
 
 
 
-struct vector { // attributo classe con underscore
+struct vector { // python-like module underscore for private attributes
     int32_t* nums_;
     int n_;
     int capacity_;
 
 
-    // :: è l operatore di C++ che definisce il namespace in cui si trova
+    // :: cpp operator for namespaces
 
 
-    // il costruttore si chiama come l'oggetto, non torna nulla
+    // constructor (same name as obj, no keyword needed)
     vector() {    // un identificatore all'interno di un metodo se non c'è tra i param etc  non serve specificare this
         this->nums_ = NULL;  // siccome si riferisce automaticamente all'oggetto
         this->n_ = 0;
@@ -49,7 +49,7 @@ struct vector { // attributo classe con underscore
     }
 
 
-    // il distruttore non va chiamato, quando esce dallo scope viene chiamato automaticamente
+    // automatically gets called when the obj is out of scope
     ~vector() {
         free(this->nums_);
     }
@@ -138,6 +138,14 @@ void roba_file( char** argv, vector* v) {
         }
     }
 
+    v->sort();
+
+    //(*v).sort();
+
+    for (int i = 0; i < (*v).size(); i++) {
+        fprintf(fout, "%" PRId32 "\n", (*v).at(i));
+    }
+
 
 }
 
@@ -147,15 +155,15 @@ int main(int argc, char** argv)
 
     printf("\n%s %s", argv[1], argv[2]);
 
-    vector v = 0; // passa 10 al costruttore, notazione UNICO PARAMETRO
+    vector v = 0; // parameter to constr. 1-parameter syntax
 
     roba_file(argv, &v);
 
     v.print();
 
-    vector v_2(10); // NOTAZIONE FUNZIONALE, PIU PARAMETRI
+    vector v_2(10); // "as a function" syntax - more parameters
 
-    vector v_3{ 10 }; // NOTAZIONE MODERNA
+    vector v_3{ 10 }; // modern syntax
 
 
 
@@ -179,14 +187,3 @@ int main(int argc, char** argv)
 
 
 }
-
-// Per eseguire il programma: CTRL+F5 oppure Debug > Avvia senza eseguire debug
-// Per eseguire il debug del programma: F5 oppure Debug > Avvia debug
-
-// Suggerimenti per iniziare: 
-//   1. Usare la finestra Esplora soluzioni per aggiungere/gestire i file
-//   2. Usare la finestra Team Explorer per connettersi al controllo del codice sorgente
-//   3. Usare la finestra di output per visualizzare l'output di compilazione e altri messaggi
-//   4. Usare la finestra Elenco errori per visualizzare gli errori
-//   5. Passare a Progetto > Aggiungi nuovo elemento per creare nuovi file di codice oppure a Progetto > Aggiungi elemento esistente per aggiungere file di codice esistenti al progetto
-//   6. Per aprire di nuovo questo progetto in futuro, passare a File > Apri > Progetto e selezionare il file con estensione sln
