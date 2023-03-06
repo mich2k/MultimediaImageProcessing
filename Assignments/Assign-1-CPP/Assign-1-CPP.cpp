@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <stdio.h>
+#include <utility>
 
 int cmpfunc(const void* a, const void* b)   //cmpfunc overflow-safe
 {
@@ -23,7 +24,7 @@ int cmpfunc(const void* a, const void* b)   //cmpfunc overflow-safe
 }
 
 
-
+// costruttore di coppia + operatore di assegnamento + distruttore
 struct vector { // python-like module underscore for private attributes
     int32_t* nums_;
     int n_;
@@ -47,6 +48,26 @@ struct vector { // python-like module underscore for private attributes
         nums_ = (int32_t*) calloc(initial_size, sizeof(int32_t));
 
     }
+
+
+    // In C++ you should almost never pass an object as a value and not as a reference
+        // we may fall into a recursive constructor
+        // we should always explicitly write down that we want actually pass the obj by value
+    // So, everytime we use CONST OBJ_TYPE REFERENCE
+        // SAME goes for String obj -> "const string&"
+    vector(const vector& other) {
+        n_ = other.n_;
+        capacity_ = other.capacity_;
+        nums_ = (int32_t*) malloc(sizeof(int32_t) * capacity_);
+        for (size_t i = 0; i < n_; i++) {
+            nums_[i] = other.nums_[i];
+        }
+
+    }
+
+
+
+
 
 
     // automatically gets called when the obj is out of scope
@@ -86,7 +107,6 @@ struct vector { // python-like module underscore for private attributes
     }
 
 
-
     void print() {
         for (size_t i = 0; i < n_; i++) {
             std::cout << nums_[i] << std::endl;
@@ -94,7 +114,103 @@ struct vector { // python-like module underscore for private attributes
     }
 
 
+    // operator overloading [] square brackets
+        // with reference i'm actually returning a var that is a reference to nums_[i] 
+            // the cell memory, that is a lvalue and not the actual value
+
+    // we need to delete the const keyword since eventually we are changing the value
+
+    int32_t& operator[](int i) {
+        return nums_[i];
+    }
+
+    // these two methods are not the same, since the first hidden parameter (this)
+        // is this and const this in the second method
+
+    const int32_t& operator[](int i) const {
+        return nums_[i];
+    }
+
+
+    void write_vector(FILE* f,const vector& v) { // notice pass by reference, const since we do not need to edit it
+        for (int i = 0; i < v.size(); i++) {
+            fprintf(f, "%" PRId32 "\n", v[i]); // ERROR:  no operator '[]' matches these operands, operand types are: const vector [int]
+                // CONST MANDATORY
+        }
+    }
+
+    vector& operator=(vector other) { // copy-and-swap idiom
+
+        swap(*this, other);
+        return *this;
+    }
+
+
+    friend void swap(vector& left, vector& right) {
+        using std::swap;
+        swap(left.n_, right.n_);
+        swap(left.capacity_, right.capacity_);
+        swap(left.nums_, right.nums_);
+
+    }
+
+
+
+
+    /*
+
+    vector& assign(const vector& other) { // reference
+
+
+        // self-assignment prevention
+            // is needed since i may have an array of vectors
+            // and may happen ie during sorting
+
+        if (this != &other) {   // address
+
+
+
+            // destructor on old vector
+            free(this->nums_);
+
+
+            this->n_ = other.n_;
+            this->capacity_ = other.capacity_;
+
+            //mem alloc
+            this->nums_ = (int32_t*)malloc(this->capacity_ * sizeof(int32_t));
+
+            // copying files
+
+            for (size_t i = 0; i < this->capacity_; i++) {
+                this->nums_[i] = other.nums_[i];
+            }
+
+            return *this;
+
+            // has to receive a const reference to the obj im copying
+            // has to return a reference to an object, so a return *this
+            // must be avoided self assignment or in any way managed
+        }
+    }
+    */
+
+
 };
+
+
+
+struct number {
+    int val_;
+    number() : val_(7) { // Initialization 
+            // DEFAULT CONSTRUCTOR
+        //val_ = 7;
+    }
+};
+
+
+
+
 
 // con int* val devo passare un puntatore dal chiamante, 
     // mettendo int &val vado a mettere default per reference e non per copia
@@ -147,11 +263,15 @@ void roba_file( char** argv, vector* v) {
     }
 
 
+
+
+
 }
 
 
 int main(int argc, char** argv)
 {
+    
 
     printf("\n%s %s", argv[1], argv[2]);
 
@@ -159,7 +279,6 @@ int main(int argc, char** argv)
 
     roba_file(argv, &v);
 
-    v.print();
 
     vector v_2(10); // "as a function" syntax - more parameters
 
@@ -173,14 +292,48 @@ int main(int argc, char** argv)
     //vector y = v; // copia elemento per elemento sui campi, quindi fa una shallow copy di nums
                     // siccome hanno lo stesso puntatore a nums_
 
-    //v.sort();
-    //v.print();
+    vector y = v; // INIT OEPRATION, v is passed as first param into vector constructor
+
+
+    // WHEN CPP OBJS ARE USED:
+    // 
+    // 
+        // THIS SYNTAX: AUTOMATIC MALLOC + number CONSTRUCTOR correctly CALLED
+    number* myNumber = new number;
+
+    // WRONG SYNTAX FOR OBJECTS:
+    //
+    //  not even Initialized
+    number* noConstructorCalledNumber = (number*)malloc(sizeof(number));
+
+
+    int value = myNumber->val_; // RIGHT
+    int wrongValue = noConstructorCalledNumber->val_; // WRONG
 
 
 
 
-    std::cout << "Hello World!\n";
+    // destructors
 
+    delete myNumber;
+    delete noConstructorCalledNumber;
+
+
+
+
+    // what if i need malloc of more numbers?
+
+    number* moreNumbers = new number[10]; // here i alloc 10 numbers !! BRACKETS -> MORE THAN ONE
+
+    delete[] moreNumbers; // new[] -> requires -> delete[] // brackets for brackets, deleter for more (10) objects
+
+
+
+
+    // by changing with int_32& with reference in brackets operator 
+    // we are able to change the value, since we have the cell memory
+
+    y[0] = 2;  // NO CONST MANDATORY
 
 
 
