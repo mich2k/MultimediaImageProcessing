@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
         // first thing read from stream
 
         uint8_t c;
-        in_stream >> c;
+        in_stream >> std::noskipws >> c; // NO skip whitespace manipulator
 
 
         // then check for stream errors or eof reached
@@ -95,9 +95,9 @@ int main(int argc, char* argv[]) {
     // for-each print
     for (const auto& kv : kv_map)
     {
-        std::cout << kv.first << " " << kv.second << "\n";
+        std::cout << std::hex << (int)kv.first << '\t' << std::dec << kv.second << endl;
 
-        out_stream << kv.first << '\t' << kv.second << endl;
+        out_stream << std::hex << (int)kv.first << '\t' << std::dec << kv.second << endl;
     }
 
 
