@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include <cmath>
 #include <fstream>
 template<typename T>
 std::ostream& raw_write(std::ostream& os, const T& val, size_t size = sizeof(T)) {
@@ -130,21 +131,17 @@ public:
 };*/
 
 
-int map(std::vector<int>& v_mapped, std::ifstream& in) {
+std::vector<int32_t> map(std::vector<int32_t>& v_mapped, std::ifstream& in) {
 	
 	std::istream_iterator<int32_t> in_start(in);
 	std::istream_iterator<int32_t> in_stop;
-	std::vector<int> v = { in_start, in_stop };
+	std::vector<int> v;
 
-	// v.assign(in_start, in_stop);
-
-	for (auto it = v.begin(); it != v.end(); it++) {
-		std::cout << *it << std::endl;
-	}
+	v.assign(in_start, in_stop);
 
 	for (auto& elem : v) {
 		if (elem == 0) {
-			v_mapped.push_back(0);
+			v_mapped.push_back(1);
 			continue;
 		}
 		if (elem > 0) {
@@ -152,13 +149,40 @@ int map(std::vector<int>& v_mapped, std::ifstream& in) {
 			continue;
 		}
 
+		// elem < 0
+
 		int t = elem;
 		t *= -2;
 		v_mapped.push_back(t);
 
 	}
-	return 0;
+	return v;
 }
+
+
+std::vector<int32_t> revert_map(std::vector<uint32_t>& v) {
+	std::vector<int32_t> out;
+	int32_t t = 1;
+	for (auto& e : v) {
+		if (e == 1) {
+			out.push_back(0);
+			continue;
+		}
+		if (e % 2 != 0) {
+			out.push_back((e - 1) / 2);
+			continue;
+		}
+
+		t =  e/2;
+		t *= -1;
+		out.push_back(t);
+	}
+
+
+
+	return out;
+}
+
 
 
 
@@ -166,7 +190,7 @@ int main(int argc, char* argv[])
 {
 	using namespace std;
 
-	if (argc != 4) {
+	if (argc < 4) {
 		cout << "Usage: elias [c|d] <filein> <fileout>" << endl;
 		return(EXIT_FAILURE);
 	}
@@ -200,26 +224,85 @@ int main(int argc, char* argv[])
 
 	switch (mode) {
 	case 'c': {
-		//vector<int> v_mapped;
 
+		bitwriter bw(out);
+		vector<int> v_mapped;
+		vector<int> v = map(v_mapped, in);
 
-		std::istream_iterator<int32_t> in_start(in);
-		std::istream_iterator<int32_t> in_stop;
-		std::vector<int32_t> v_mapped = { in_start, in_stop };
+		if (*argv[4] == '1') {
 
-		cout << "Size: " << v_mapped.size() << endl;
-		for (int i = 0; i < v_mapped.size(); i++) {
-			cout << v_mapped[i] << endl;
+			cout << " --- Elias Map ---\n" << endl;
 		}
 
-		//map(v_mapped, in);
+		for (size_t i = 0; i < v_mapped.size(); i++) {
 
-		for (int e : v_mapped) {
-			cout << e << endl;
+			double logc = log2(v_mapped[i]);
+			double zeros = floor(logc);
+			double cl = floor(logc) + 1;
+
+			if (*argv[4] == '1') {
+				cout << v.at(i) << " --> " << v_mapped.at(i) << "; zeros " << zeros << "; CL:" << cl << endl;
+			}
+
+			// code len: log_2 (x) + 1
+			// zeros len: log_2 (x) app. class
+
+			bw.write(v_mapped[i], zeros + cl);
 		}
+
 		break;
 
 
+		}
+	case 'd': {
+		
+		bitreader br(in);
+		vector<uint32_t> v_to_map;
+
+
+		while (true) {
+			uint32_t zeros_read = 0;
+			uint32_t sx_value = 0;
+			uint8_t r = 0;
+
+
+			if (br.fail()) {
+				break;
+			}
+
+			while(r != 1){
+				r = br.read_bit();
+				if (r == 0) {
+					zeros_read++;
+				}
+			}
+
+			//br.read_bit(); 
+
+
+			sx_value = pow(2, zeros_read);
+
+			uint32_t dx_value = br.read(zeros_read);
+			uint32_t fin_value = sx_value + dx_value;
+			//cout << fin_value << "\t" << zeros_read << endl;
+			v_to_map.push_back(fin_value);
+		}
+
+		std::vector<int32_t> rev_v = revert_map(v_to_map);
+
+		copy(rev_v.begin(), rev_v.end(), std::ostream_iterator<int32_t>(out, "\n"));
+
+		if (*argv[4] == '1') {
+			for (size_t i = 0; i < rev_v.size(); i++) {
+				cout << v_to_map[i] << " ---> " << rev_v[i] << endl;
+			}
+		}
+
+
+		break;
+	}
+	default: {
+		break;
 	}
 	}
 
