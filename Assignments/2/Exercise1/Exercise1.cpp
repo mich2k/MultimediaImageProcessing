@@ -1,16 +1,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
-#include <assert.h>
 #include <map>
 #include <utility>
-#include <vector>
 #include <iostream>
 #include <fstream>
-#include <algorithm>
-#include <iterator>
 
-
+#include <iomanip>
 // pointless function that i will keep in order to exercise with references, hashmaps and references
     // useless for the scope of the exercise
 
@@ -37,7 +33,6 @@ int main(int argc, char* argv[]) {
     using std::endl;
     using std::ifstream;
     using std::ofstream;
-    using std::vector;
 
     std::map<uint8_t, size_t> kv_map;
 
@@ -95,9 +90,16 @@ int main(int argc, char* argv[]) {
     // for-each print
     for (const auto& kv : kv_map)
     {
-        std::cout << std::hex << (int)kv.first << '\t' << std::dec << kv.second << endl;
+        using namespace std;
+        /*
+            setBase(16) base 16
+            setw(2) width
+            setfill(0) use 0 instead of spaces
+        
+        */
+        cout << uppercase <<  hex << setw(2) << setfill('0') << (int)kv.first << '\t' << dec << kv.second << endl;
 
-        out_stream << std::hex << (int)kv.first << '\t' << std::dec << kv.second << endl;
+        out_stream << uppercase << hex << setw(2) << setfill('0') << (int)kv.first << '\t' << dec << kv.second << endl;
     }
 
 
