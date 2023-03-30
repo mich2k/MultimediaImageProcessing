@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <map>
 #include <functional>
+#include <iomanip>
+
+
 
 template<typename T>
 std::ostream& raw_write(std::ostream& os, const T& val, size_t size = sizeof(T)) {
@@ -192,23 +195,25 @@ int decode(const char* in_filename, const char* out_filename) {
 }
 
 
-void assign_code(std::vector<std::string>& codes, node* node,std::string seq) {
+void assign_code(std::vector<std::string>& v_codes, std::map<char, std::string>& codes, node* node,std::string& seq) {
 
 	// a == 1101
 
 	if (node) {
 
 		if (node->sym_ != '\0') {
-			std::cout << node->sym_ << " " << seq << std::endl;
+			// std::cout << node->sym_ << " " << seq << std::endl;
+			codes[node->sym_] = seq;
+			v_codes.push_back(seq);
 		}
 
 
 		seq.push_back('0');
-		assign_code(codes, node->left_,seq );
+		assign_code(v_codes,codes, node->left_,seq );
 		seq.pop_back();
 
 		seq.push_back('1');
-		assign_code(codes, node->right_, seq);
+		assign_code(v_codes,codes, node->right_, seq);
 		seq.pop_back();
 	}
 }
@@ -219,6 +224,7 @@ int encode(const char* in_filename, const char* out_filename) {
 
 	ifstream in(in_filename, ios::binary);
 	ofstream out(out_filename, ios::binary);
+	bitwriter bw(out);
 
 	if (!in || !out) {
 		return 1;
@@ -233,12 +239,14 @@ int encode(const char* in_filename, const char* out_filename) {
 		m[c]++;
 	}
 
-	uint16_t sum = 0;
+	uint32_t sum = 0;
 	
 	for (auto it = m.begin(); it != m.end(); it++) {
 		cout << it->first << " " << it->second << "; ";
 		sum += it->second;
 	}
+
+
 
 	cout << endl;
 
@@ -252,11 +260,11 @@ int encode(const char* in_filename, const char* out_filename) {
 		cout << it->first << " " << it->second << "; ";
 	}
 
-	if (sum == 256) {
+	if (m.size() == 256) {
 		out << 0;
 	}
 
-	out << (uint8_t) sum;
+	out << (uint8_t) m.size(); // n_items
 
 	vector<node*> nodeptr_v;
 
@@ -304,12 +312,48 @@ int encode(const char* in_filename, const char* out_filename) {
 	cout << endl << "Huffman Tree visual" << "\n\n";
 
 	printBT(root);
-
-	vector <string> huff_codes;
+	vector<string> v_codes;
+	map <char, string> huff_codes;
 	string seq = "";
-	assign_code(huff_codes, root, seq);
+	assign_code(v_codes, huff_codes, root, seq);
+
+	for (auto& it : v_codes) {
+		cout << it << '\t';
+	}
+
+	for (auto& it : huff_codes) {
+		cout << it.first << " " << it.second << endl;
 
 
+		bw.write(it.first, 8);
+		uint32_t code_len = it.second.length();
+		bw.write(code_len, 5);
+
+		for (size_t i = 0; i < it.second.length(); i++) {
+			uint8_t bit = it.second.c_str()[i] - '0';
+			bw.write(bit , 1);
+		}
+	}
+
+	bw.write(sum, 32);
+
+
+
+	// in questo modo evito di caricare il file su un vettore interamente
+	in.clear();
+	in.seekg(0, in.beg);
+	
+
+	while (in >> c) {
+
+		for (size_t i = 0; i < huff_codes[c].length(); i++) {
+			uint8_t bit = huff_codes[c].c_str()[i] - '0';
+			cout << huff_codes[c].c_str()[i];
+			bw.write(bit, 1);
+		}
+		cout << endl;
+
+	}
 
 
 	return 0;
@@ -319,6 +363,8 @@ int encode(const char* in_filename, const char* out_filename) {
 
 int main(int argc, char** argv) {
 	using namespace std;
+
+
 
 	if (argc != 4) {
 		cout << "usage huffman1 [c|d] <input file> <output file>" << endl;
@@ -335,9 +381,6 @@ int main(int argc, char** argv) {
 	if (ret != 0) {
 		return 1;
 	}
-
-
-
 
 	return EXIT_SUCCESS;
 }

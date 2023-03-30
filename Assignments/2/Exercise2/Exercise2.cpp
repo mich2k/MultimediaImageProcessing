@@ -27,7 +27,7 @@ int teacherReadFromFile(std::ifstream& in, std::vector<int>& v, std::ofstream& o
 
         //  to avoid this uniform initilization has been introduced in c++11
         //  since can not be mistaken as a function def.
-
+ 
     v.assign(is_start, is_stop); // assign method accepts two iterators! we can use
                                 // this after the vector initialization
 
