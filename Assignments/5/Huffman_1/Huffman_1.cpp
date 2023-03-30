@@ -249,8 +249,7 @@ int decode(const char* in_filename, const char* out_filename) {
 		uint8_t bit = br.read_bit();
 		r_code.push_back(bit + '0');
 		if (huffman_codes.count(r_code) == 1) {
-			cout << "step: " << i << endl;
-			cout << (char)huffman_codes[r_code] << endl;
+			// cout << (char)huffman_codes[r_code] << endl;
 			out << huffman_codes[r_code];
 			r_code = "";
 			i++;
