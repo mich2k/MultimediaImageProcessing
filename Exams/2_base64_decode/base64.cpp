@@ -40,6 +40,16 @@ public:
     };
 
 
+    void cleanInput() {
+        string clean;
+        for (auto e : input_) {
+            if (alphabet_.count(e) == 1 || e == '=')
+                clean.push_back(e);
+        }
+        input_ = clean;
+
+    }
+
     void decode() {
 
         size_t triplets = 0;
@@ -56,7 +66,9 @@ public:
             for (auto& e : quad_base64) {
                 if (e == '=')
                     break;
+
                 quad_decoded_64[v] = alphabet_.at(e);   // [] add, .at() throws
+
                 v++;
 
             }
@@ -77,7 +89,7 @@ public:
                     uint8_t x = 0;
                     bits -= 8;
                     x |= (val >> bits);
-                    if(x != 0)  // we avoid writing the true zeros of padding 
+                    if(x != 0 || paddingNumber_ == 0)  // we avoid writing the true zeros of padding // bug: we have to be sure these are padding-zeros
                         decoded_.push_back(x);
                 }
 
@@ -98,16 +110,18 @@ public:
 
 std::string base64_decode(const std::string& input) {
     base64 b(input);
+    b.cleanInput();
     b.decode();
     return b.getDecoded();
 }
 
 
 
-
-
-int main()
-{
-    string input = "bGlnaHQgd29yay4=";
-    cout << base64_decode(input);
-}
+//
+//
+//int main()
+//{
+//    string input = "AP8A\n";
+//    ofstream o("out.bin", ios::binary);
+//    o << base64_decode(input);
+//}
