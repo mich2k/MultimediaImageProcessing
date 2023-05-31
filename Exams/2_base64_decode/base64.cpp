@@ -34,7 +34,7 @@ private:
 public:
 
 
-    base64(string input) : input_(input), buffer_(0) {
+    base64(string input) : input_(input), buffer_(0), paddingNumber_(0) {
         buildAlphabet();
         needsPadding_ = input.length() % 4 != 0 ? true: false;
     };
@@ -85,12 +85,11 @@ public:
 
             // reading 8 bits per time for 3 times from our 24 bits "buffer"
                 uint8_t bits = 24;
-                for (uint8_t n = 0; n < 3; n++) {
+                for (uint8_t n = 0; n < 3 - paddingNumber_; n++) {
                     uint8_t x = 0;
                     bits -= 8;
                     x |= (val >> bits);
-                    if(x != 0 || paddingNumber_ == 0)  // we avoid writing the true zeros of padding // bug: we have to be sure these are padding-zeros
-                        decoded_.push_back(x);
+                    decoded_.push_back(x);
                 }
 
 
@@ -117,11 +116,11 @@ std::string base64_decode(const std::string& input) {
 
 
 
-//
-//
-//int main()
-//{
-//    string input = "AP8A\n";
-//    ofstream o("out.bin", ios::binary);
-//    o << base64_decode(input);
-//}
+
+
+int main()
+{
+    string input = "AP8A\n";
+    ofstream o("out.bin", ios::binary);
+    o << base64_decode(input);
+}
