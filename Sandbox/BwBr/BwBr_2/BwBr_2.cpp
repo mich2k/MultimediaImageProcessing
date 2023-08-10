@@ -43,6 +43,22 @@ public:
 
 		uint32_t bit = 0;
 		bit = (buffer_ >> (n_bits_ - 1)) & 1; // porto in ultima l'n_bits_ che voglio e lo isolo
+
+		/*
+			n_bits_ - 1 dato che:
+				supp. x = 128 base 10 -> 1000'0000 base 2
+				
+				x >> 5 => 100
+				x >> 6 => 10
+				x >> 7 => 1
+
+				l'1 in prima pos. può essere spostato max. di 7 posizioni
+				facendo uno shift di 8 ho
+
+				x >> 8 => 0 !!!
+		
+		*/
+
 		n_bits_--;
 
 
@@ -57,10 +73,6 @@ public:
 		}
 
 		return in_;
-
-	}
-
-	istream& read(size_t n) {
 
 	}
 
