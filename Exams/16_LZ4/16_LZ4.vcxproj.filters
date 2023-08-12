@@ -18,8 +18,5 @@
     <ClCompile Include="main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="huffman.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

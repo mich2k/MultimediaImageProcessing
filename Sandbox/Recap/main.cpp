@@ -3,6 +3,8 @@
 #include <fstream>
 #include <cstdint>
 
+#include "huffman.cpp"
+#include <unordered_map>
 
 using namespace std;
 
@@ -97,16 +99,32 @@ public:
 int main(void) {
 
 	//ofstream os("out.bin", ios::binary);
-	ifstream in("out.bin", ios::binary);
 	//bitwriter bw(os);
+
+	ifstream in("out.bin", ios::binary);
 	bitreader br(in);
+
 
 	uint32_t x = 0;
 
-	// bw.write(2, 2);
-	// bw.~bitwriter();
+	//bw.write(2, 2);
+	//bw.~bitwriter();
 	br.read(x, 2);
 	cout << x << endl;
+
+	huffman<char> h;
+	unordered_map<char, uint32_t> freq;
+
+	freq['a'] = 10;
+	freq['b'] = 7;
+	freq['c'] = 3;
+	freq['d'] = 11;
+
+	h.create_table(freq);
+
+	h.compute_canonical_codes();
+
+	
 
 
 
