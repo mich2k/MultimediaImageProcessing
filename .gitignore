@@ -360,3 +360,6 @@ MigrationBackup/
 .idea
 .idea/*
 *.bin
+*.pam
+*.pgm
+*.ppm

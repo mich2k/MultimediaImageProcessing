@@ -80,10 +80,13 @@ int main() {
     using namespace std;
     unordered_map<char, uint32_t> freq;
 
+    freq['c'] = 24;
+    freq['b'] = 15;
     freq['a'] = 10;
-    freq['b'] = 7;
-    freq['c'] = 3;
-    freq['d'] = 11;
+    freq['e'] = 9;
+    freq['d'] = 2;
+
+
 
     huffman<char> h;
 

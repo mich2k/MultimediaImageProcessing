@@ -137,8 +137,15 @@ int main(void)
 	/* bitwriter example */
 	ofstream out(fn, ios::binary);
 	bitwriter bw(out);
-	while(n-- > 0)
-	    bw.write(2, 2);
+	uint8_t c = 'a';
+	uint8_t d = 'b';
+	uint8_t e = 'c';
+	uint8_t r = 128;
+
+	bw.write(c, 8);
+	bw.write(d, 8);
+	bw.write(e, 8);
+	bw.write(r, 4);
 
 
 	/* bitreader example */
