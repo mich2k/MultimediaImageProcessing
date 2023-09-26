@@ -137,7 +137,7 @@ public:
 		return _decoded[offset + (i % match_distance)];
 	}
 
-	void addMatchToDecoded(uint8_t match_len, uint16_t match_distance) {
+	void addMatchToDecoded(uint16_t match_len, uint16_t match_distance) {
 		// 1st issue: the match distance refers to the fixed decoded size
 			// the vector will vary in size during push backs
 			// hence we must store the "start" value of the vector
@@ -521,7 +521,7 @@ public:
 
 
 		void action() {
-			uint8_t literal_len = 0, match_len = 0;
+			uint16_t literal_len = 0, match_len = 0;
 			uint16_t match_distance = 0;
 			if (_type == "sml_d") {
 
