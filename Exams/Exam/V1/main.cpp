@@ -184,7 +184,7 @@ private:
 
 
 	void buildAdamKernel() {
-		// probabilmente più opportuno un vector<array<>>
+		// probabilmente piÃ¹ opportuno un vector<array<>>
 
 		vector<uint8_t> adamRow = { 1,6,4,6,2,6,4,6 };
 		_adamKernel.push_back(adamRow);
@@ -300,7 +300,7 @@ private:
 	string _prefix = "";
 
 	void buildAdamKernel() {
-		// probabilmente più opportuno un vector<array<>>
+		// probabilmente piÃ¹ opportuno un vector<array<>>
 
 		vector<uint8_t> adamRow = { 1,6,4,6,2,6,4,6 };
 		_adamKernel.push_back(adamRow);
@@ -392,7 +392,7 @@ public:
 	}
 
 	void decodeLevelSeven() {
-		vector<deque<uint8_t>> LevelsRaw; // si può usare un vector facilmente, o template Tvec per un container generico
+		vector<deque<uint8_t>> LevelsRaw; // si puÃ² usare un vector facilmente, o template Tvec per un container generico
 
 		for (uint8_t level = 0; level < 7; level++) {
 			deque<uint8_t> row;
@@ -416,7 +416,7 @@ public:
 
 		string out_name = _prefix;
 		out_name += "_7.pgm";
-		ofstream out(out_name);
+		ofstream out(out_name, ios::binary);
 
 		pgm_out seven(out, _width, _height);
 		seven.writeHeader();
@@ -475,7 +475,7 @@ public:
 
 		string out_name = _prefix;
 		out_name += "_1.pgm";
-		ofstream out(out_name);
+		ofstream out(out_name, ios::binary);
 
 		pgm_out first(out, _width, _height);
 		first.writeHeader();
@@ -535,7 +535,7 @@ public:
 
 		string out_name = _prefix;
 		out_name += "_2.pgm";
-		ofstream out(out_name);
+		ofstream out(out_name, ios::binary);
 
 		pgm_out first(out, _width, _height);
 		first.writeHeader();
@@ -596,7 +596,7 @@ public:
 
 		string out_name = _prefix;
 		out_name += "_3.pgm";
-		ofstream out(out_name);
+		ofstream out(out_name, ios::binary);
 
 		pgm_out three(out, _width, _height);
 		three.writeHeader();
@@ -658,7 +658,7 @@ public:
 
 		string out_name = _prefix;
 		out_name += "_4.pgm";
-		ofstream out(out_name);
+		ofstream out(out_name, ios::binary);
 
 		pgm_out four(out, _width, _height);
 		four.writeHeader();
@@ -717,7 +717,7 @@ public:
 
 		string out_name = _prefix;
 		out_name += "_5.pgm";
-		ofstream out(out_name);
+		ofstream out(out_name, ios::binary);
 
 		pgm_out five(out, _width, _height);
 		five.writeHeader();
@@ -777,7 +777,7 @@ public:
 
 		string out_name = _prefix;
 		out_name += "_6.pgm";
-		ofstream out(out_name);
+		ofstream out(out_name, ios::binary);
 
 		pgm_out six(out, _width, _height);
 		six.writeHeader();
@@ -827,7 +827,7 @@ int main(int argc, char** argv) {
 	char option = *argv[1];
 	if (option == 'c') {
 		ifstream in(argv[2], ios::binary);
-		ofstream pgm_out_test("lalala.pgm", ios::binary);
+		ofstream pgm_out_test("test_out_pgm.pgm", ios::binary);
 
 		if (!in) {
 			return EXIT_FAILURE;
@@ -868,7 +868,7 @@ int main(int argc, char** argv) {
 			a.readRawAdamLevels();
 
 			// the decodeLevelN can(had to) be generalized as a function
-				// fatto solo per capire meglio perchè dimezzasse ad ogni livello
+				// fatto solo per capire meglio perchÃ¨ dimezzasse ad ogni livello
 
 			if(a.checkLevelAviab(7))
 				a.decodeLevelSeven();
