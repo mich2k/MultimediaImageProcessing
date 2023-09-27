@@ -286,9 +286,7 @@ public:
 };
 
 
-
-// super ugly solution but i dont have the time to understand how to null instantiate 
-	// a istream/ostream reference, can be solved by pointers but dont have time to refractor the encode
+// istream/ostream reference, can be solved by pointers but dont have time to refractor the encode
 class adam_decode {
 private:
 	vector<vector<adampixel>> _AdamData;	
@@ -296,7 +294,7 @@ private:
 	uint32_t _width, _height;
 	ifstream& _in;
 	array<size_t, 7> _howManyByLevel = { 0,0,0,0,0,0,0 };
-	vector<deque<uint8_t>> _AdamLevelsRaw;	// deque absolutely overkill but saves time & speeds up debugging for me
+	vector<deque<uint8_t>> _AdamLevelsRaw;	// deque absolutely overkill
 	string _prefix = "";
 
 	void buildAdamKernel() {
@@ -392,7 +390,7 @@ public:
 	}
 
 	void decodeLevelSeven() {
-		vector<deque<uint8_t>> LevelsRaw; // si può usare un vector facilmente, o template Tvec per un container generico
+		vector<deque<uint8_t>> LevelsRaw; // template Tvec per un container
 
 		for (uint8_t level = 0; level < 7; level++) {
 			deque<uint8_t> row;
@@ -868,7 +866,6 @@ int main(int argc, char** argv) {
 			a.readRawAdamLevels();
 
 			// the decodeLevelN can(had to) be generalized as a function
-				// fatto solo per capire meglio perchè dimezzasse ad ogni livello
 
 			if(a.checkLevelAviab(7))
 				a.decodeLevelSeven();
